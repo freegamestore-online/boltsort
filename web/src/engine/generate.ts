@@ -19,8 +19,8 @@ export interface LevelOptions {
   colours?: number;
   /** Full box fills per colour. Each colour has `fills * BOX_SIZE` screws. */
   fills?: number;
-  /** Screws per plate. */
-  plateSize?: number;
+  /** Number of plates (layers). Screws are dealt round-robin, so layers are near-equal. */
+  layers?: number;
   trayCapacity?: number;
 }
 
@@ -32,7 +32,7 @@ export interface LevelOptions {
 export function generateLevel(seed: number, options: LevelOptions = {}): Board {
   const colourCount = options.colours ?? 3;
   const fills = options.fills ?? 2;
-  const plateSize = options.plateSize ?? 4;
+  const layers = options.layers ?? 3;
   const trayCapacity = options.trayCapacity ?? 5;
   if (colourCount < 1 || colourCount > COLOURS.length) throw new Error("colours out of range");
 
@@ -46,10 +46,9 @@ export function generateLevel(seed: number, options: LevelOptions = {}): Board {
     [screws[i], screws[j]] = [screws[j]!, screws[i]!];
   }
 
-  const plates: Plate[] = [];
-  for (let i = 0; i < screws.length; i += plateSize) {
-    plates.push({ screws: screws.slice(i, i + plateSize) });
-  }
+  if (layers < 1 || layers > screws.length) throw new Error("layers out of range");
+  const plates: Plate[] = Array.from({ length: layers }, () => ({ screws: [] }));
+  screws.forEach((colour, i) => plates[i % layers]!.screws.push(colour));
 
   const boxes = colours.map((colour) => ({ queue: Array<Colour>(fills).fill(colour), filled: 0 }));
 

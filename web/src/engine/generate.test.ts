@@ -17,8 +17,12 @@ describe("generateLevel", () => {
     expect(screws).toEqual(expected);
   });
 
+  it("deals screws into the requested number of layers", () => {
+    expect(generateLevel(5, { layers: 4 }).plates).toHaveLength(4);
+  });
+
   it.each(Array.from({ length: 25 }, (_, i) => i + 1))("seed %i is solvable", (seed) => {
-    const level = generateLevel(seed, { colours: 2 + (seed % 3), fills: 1 + (seed % 3), plateSize: 3 + (seed % 4) });
+    const level = generateLevel(seed, { colours: 2 + (seed % 3), fills: 1 + (seed % 3), layers: 2 + (seed % 4) });
     const taps = solve(level);
     expect(taps).not.toBeNull();
     expect(status(replay(level, taps!))).toBe("won");
