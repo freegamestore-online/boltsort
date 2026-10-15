@@ -9,6 +9,7 @@
     "build": "pnpm --filter @boltsort/web build",
     "preview": "pnpm --filter @boltsort/web preview",
     "typecheck": "pnpm --filter @boltsort/web exec tsc -b",
+    "lint": "pnpm --filter @boltsort/web lint",
     "test": "pnpm --filter @boltsort/web test"
   }
 }
