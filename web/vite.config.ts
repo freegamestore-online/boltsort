@@ -43,7 +43,7 @@ export default defineConfig({
       manifest: {
         name: "Boltsort",
         short_name: "Boltsort",
-        description: "Boltsort — free forever",
+        description: "Unscrew bolts, drop plates and sort colours into boxes. 60 free levels.",
         start_url: "/",
         display: "standalone",
         background_color: "#0f0f0f",

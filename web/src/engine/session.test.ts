@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { type Board, status } from "./board";
 import { LEVELS } from "./levels";
-import { EXTRA_SLOT_BONUS, HINT_LIMIT, UNDO_LIMIT, createSession, hint, tapScrew, undo, useExtraSlot } from "./session";
+import { EXTRA_SLOT_BONUS, HINT_LIMIT, UNDO_LIMIT, createSession, hint, tapScrew, undo, addExtraSlot } from "./session";
 import { solve } from "./solver";
 
 // Two screws, tray of one: the second screw loses the level.
@@ -41,7 +41,7 @@ describe("undo", () => {
   });
 
   it("keeps an extra slot when undoing", () => {
-    const boosted = useExtraSlot(tapScrew(createSession(tight), 0));
+    const boosted = addExtraSlot(tapScrew(createSession(tight), 0));
     const back = undo(boosted);
     expect(back.board.trayCapacity).toBe(tight.trayCapacity + EXTRA_SLOT_BONUS);
   });
@@ -49,22 +49,22 @@ describe("undo", () => {
 
 describe("extra tray slot", () => {
   it("adds one tray slot, once per level", () => {
-    const boosted = useExtraSlot(createSession(tight));
+    const boosted = addExtraSlot(createSession(tight));
     expect(boosted.board.trayCapacity).toBe(tight.trayCapacity + 1);
     expect(boosted.extraSlotsLeft).toBe(0);
-    expect(() => useExtraSlot(boosted)).toThrow("no extra slots left");
+    expect(() => addExtraSlot(boosted)).toThrow("no extra slots left");
   });
 
   it("rescues a level that would otherwise be lost", () => {
     const lost = tapScrew(createSession(tight), 1);
     expect(status(lost.board)).toBe("lost");
-    expect(status(useExtraSlot(lost).board)).toBe("playing");
+    expect(status(addExtraSlot(lost).board)).toBe("playing");
   });
 
   it("cannot be used once the level is won", () => {
     const won = tapScrew(createSession({ ...tight, plates: [{ screws: ["red"] }] }), 0);
     expect(status(won.board)).toBe("won");
-    expect(() => useExtraSlot(won)).toThrow("already won");
+    expect(() => addExtraSlot(won)).toThrow("already won");
   });
 });
 
@@ -110,7 +110,7 @@ describe("helpers keep levels solvable", () => {
   });
 
   it.each(LEVELS.map((_, i) => i + 1))("level %i: an extra slot never makes it unsolvable", (index) => {
-    const boosted = useExtraSlot(createSession(LEVELS[index - 1]!)).board;
+    const boosted = addExtraSlot(createSession(LEVELS[index - 1]!)).board;
     expect(solve(boosted)).not.toBeNull();
   });
 

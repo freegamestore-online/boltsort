@@ -53,7 +53,7 @@ export function undo(session: Session): Session {
 }
 
 /** Add one tray slot for this level. Not allowed once the level is won. */
-export function useExtraSlot(session: Session): Session {
+export function addExtraSlot(session: Session): Session {
   if (session.extraSlotsLeft <= 0) throw new Error("no extra slots left");
   if (status(session.board) === "won") throw new Error("game is already won");
   return {
